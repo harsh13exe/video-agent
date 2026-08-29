@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+downloades/
+vector_db/
+*.wav
