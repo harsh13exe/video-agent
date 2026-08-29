@@ -35,4 +35,4 @@ reportlab>=4.2.2            # alternative/advanced PDF generation (optional, rem
 python-dotenv>=1.0.1        # load MISTRAL_API_KEY and other secrets from .env
 pydantic>=2.8.2
 numpy>=1.26.4
-requests>=2.32.3
+requests>=2.32.3audioop-lts
