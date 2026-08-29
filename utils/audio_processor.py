@@ -1,6 +1,14 @@
+import os
+
+# Must be set BEFORE yt_dlp is imported. This disables yt-dlp's plugin
+# discovery entirely, so a stray/incompatible third-party plugin sitting in
+# the environment (e.g. a cached "yt-dlp-ytse" install whose internal API
+# calls no longer match the installed yt-dlp version) can never be loaded or
+# crash the extractor. We don't use any yt-dlp plugins, so this is safe.
+os.environ.setdefault("YTDLP_NO_PLUGINS", "1")
+
 import yt_dlp
 from pydub import AudioSegment
-import os
 
 DOWNLOAD_DIR = 'downloades'
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)

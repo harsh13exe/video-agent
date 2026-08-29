@@ -8,6 +8,13 @@ Run with:
 """
 
 import os
+
+# Must be set before yt_dlp is imported anywhere in the app (this is the
+# entry point, so it runs first). Disables yt-dlp's plugin discovery so a
+# stray/incompatible third-party plugin cached in the environment can't
+# crash extraction. See audio_processor.py for details.
+os.environ.setdefault("YTDLP_NO_PLUGINS", "1")
+
 import tempfile
 import time
 from datetime import datetime
