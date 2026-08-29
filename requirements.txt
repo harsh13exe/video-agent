@@ -2,7 +2,7 @@
 streamlit>=1.37.0
 
 # ---------- Audio acquisition ----------
-yt-dlp>=2024.8.6
+yt-dlp
 pytube>=15.0.0
 pydub>=0.25.1
 
