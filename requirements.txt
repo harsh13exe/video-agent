@@ -11,6 +11,7 @@ openai-whisper>=20231117
 ffmpeg-python>=0.2.0
 torch>=2.2.0
 torchvision>=0.17.0
+audioop-lts; python_version>='3.13'
 
 # ---------- Translation ----------
 deep-translator>=1.11.4
