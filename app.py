@@ -1,6 +1,6 @@
 """
 AI Video Assistant — Streamlit UI
-Wraps `run_pipeline()` from main.py: YouTube/local file -> transcript ->
+Wraps `run_pipeline()` from main.py: local file -> transcript ->
 title/summary/action items/decisions/questions -> RAG chat.
 
 Run with:
@@ -24,7 +24,6 @@ from dotenv import load_dotenv
 
 from main import run_pipeline
 from core.rag_engine import ask_question
-from utils.audio_processor import YouTubeDownloadBlockedError
 
 load_dotenv()
 
@@ -129,7 +128,7 @@ for key, val in {
 st.markdown("""
 <div class="hero">
     <h1>🎬 AI Video Assistant</h1>
-    <p>Drop a YouTube link or a local recording — get a transcript, summary, action items, decisions, and a chat that knows the whole meeting.</p>
+    <p>Upload a recording — get a transcript, summary, action items, decisions, and a chat that knows the whole meeting.</p>
     <span class="meta-pill">🎙️ Whisper transcription</span>
     <span class="meta-pill">🧠 Mistral summarization</span>
     <span class="meta-pill">💬 RAG-powered chat</span>
@@ -142,16 +141,10 @@ st.markdown("""
 with st.sidebar:
     st.header("⚙️ New Analysis")
 
-    input_mode = st.radio("Source type", ["YouTube URL", "Local file upload"])
-
-    source, uploaded_file = None, None
-    if input_mode == "YouTube URL":
-        source = st.text_input("YouTube URL", placeholder="https://youtube.com/watch?v=...")
-    else:
-        uploaded_file = st.file_uploader(
-            "Upload audio/video",
-            type=["mp4", "mp3", "wav", "m4a", "mov", "mkv", "webm"],
-        )
+    uploaded_file = st.file_uploader(
+        "Upload audio/video",
+        type=["mp4", "mp3", "wav", "m4a", "mov", "mkv", "webm"],
+    )
 
     language = st.selectbox(
         "Language", ["english", "hinglish"],
@@ -177,7 +170,7 @@ with st.sidebar:
                 st.rerun()
 
     st.divider()
-    st.caption("Pipeline: download/load → transcribe → summarize → extract → index for chat")
+    st.caption("Pipeline: load → transcribe → summarize → extract → index for chat")
 
 # =============================================================================
 # RUN PIPELINE
@@ -185,20 +178,14 @@ with st.sidebar:
 if run_clicked:
     resolved_source = None
 
-    if input_mode == "YouTube URL":
-        if not source or not source.strip():
-            st.sidebar.error("Please enter a YouTube URL.")
-        else:
-            resolved_source = source.strip()
+    if uploaded_file is None:
+        st.sidebar.error("Please upload a file.")
     else:
-        if uploaded_file is None:
-            st.sidebar.error("Please upload a file.")
-        else:
-            tmp_dir = tempfile.mkdtemp()
-            tmp_path = os.path.join(tmp_dir, uploaded_file.name)
-            with open(tmp_path, "wb") as f:
-                f.write(uploaded_file.getbuffer())
-            resolved_source = tmp_path
+        tmp_dir = tempfile.mkdtemp()
+        tmp_path = os.path.join(tmp_dir, uploaded_file.name)
+        with open(tmp_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+        resolved_source = tmp_path
 
     if resolved_source:
         st.session_state.chat_history = []
@@ -224,14 +211,6 @@ if run_clicked:
                     "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
                     "result": result,
                 })
-            except YouTubeDownloadBlockedError as e:
-                status.update(label="Failed ❌", state="error", expanded=True)
-                st.error(
-                    "🚫 YouTube blocked this download. This is common on cloud-hosted "
-                    "apps — YouTube restricts datacenter IPs.\n\n"
-                    "**Try instead:** switch to **Local file upload** in the sidebar "
-                    "and upload the video/audio file directly."
-                )
             except Exception as e:
                 status.update(label="Failed ❌", state="error", expanded=True)
                 st.error(f"Pipeline error: {e}")
@@ -248,7 +227,7 @@ if result is None:
     <div class="empty-state">
         <div class="big-icon">👋</div>
         <h3>No analysis yet</h3>
-        <p>Add a YouTube URL or upload a file in the sidebar, then hit <b>Run Analysis</b>.</p>
+        <p>Upload a file in the sidebar, then hit <b>Run Analysis</b>.</p>
     </div>
     """, unsafe_allow_html=True)
 else:
