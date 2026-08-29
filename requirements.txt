@@ -2,39 +2,38 @@
 streamlit>=1.37.0
 
 # ---------- Audio acquisition ----------
-yt-dlp>=2024.8.6          # downloading audio from YouTube URLs
-pytube>=15.0.0             # optional fallback for YouTube metadata
+yt-dlp>=2024.8.6
+pytube>=15.0.0
 pydub>=0.25.1
 
 # ---------- Transcription (local Whisper) ----------
-openai-whisper>=20231117   # local Whisper model
-ffmpeg-python>=0.2.0       # audio decoding/conversion (requires ffmpeg binary installed on system)
-torch>=2.2.0                # Whisper backend (CPU or CUDA build depending on your machine)
-audioop-lts                 # replaces Python's removed built-in audioop module (needed by pydub on Python 3.13+)
+openai-whisper>=20231117
+ffmpeg-python>=0.2.0
+torch>=2.2.0
 
-# ---------- Translation (Hindi -> English) ----------
-deep-translator>=1.11.4    # lightweight translation wrapper (Google Translate backend)
-langdetect>=1.0.9          # detect Hindi vs English before translating
+# ---------- Translation ----------
+deep-translator>=1.11.4
+langdetect>=1.0.9
 
 # ---------- LLM orchestration ----------
 langchain>=0.2.14
 langchain-core>=0.2.38
 langchain-community>=0.2.12
-langchain-mistralai>=0.1.13   # Mistral API integration for LangChain LCEL chains
+langchain-mistralai>=0.1.13
 
 # ---------- RAG / Vector store ----------
 chromadb>=0.5.5
-langchain-chroma>=0.1.0        # Chroma wrapper used by core/vector_store.py
-sentence-transformers>=3.0.1   # HuggingFace embedding models
-langchain-huggingface>=0.0.3   # HF embeddings wrapper for LangChain
-tiktoken>=0.7.0                 # token counting for chunking
+langchain-chroma>=0.1.0
+sentence-transformers>=3.0.1
+langchain-huggingface>=0.0.3
+tiktoken>=0.7.0
 
-# ---------- Export (PDF / TXT) ----------
-fpdf2>=2.7.9                # PDF generation
-reportlab>=4.2.2            # alternative/advanced PDF generation (optional, remove if unused)
+# ---------- Export ----------
+fpdf2>=2.7.9
+reportlab>=4.2.2
 
 # ---------- Utilities ----------
-python-dotenv>=1.0.1        # load MISTRAL_API_KEY and other secrets from .env
+python-dotenv>=1.0.1
 pydantic>=2.8.2
 numpy>=1.26.4
 requests>=2.32.3
