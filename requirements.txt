@@ -2,8 +2,10 @@
 streamlit>=1.37.0
 
 # ---------- Audio acquisition ----------
-yt-dlp
-pytube>=15.0.0
+# Pinned (not left open-ended) so a redeploy can't silently pull in a yt-dlp
+# release whose internal extractor API has moved out from under any cached
+# PO-token plugin in the environment. Bump this deliberately when you update.
+yt-dlp==2026.08.19
 pydub>=0.25.1
 
 # ---------- Transcription (local Whisper) ----------

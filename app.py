@@ -17,6 +17,7 @@ from dotenv import load_dotenv
 
 from main import run_pipeline
 from core.rag_engine import ask_question
+from utils.audio_processor import YouTubeDownloadBlockedError
 
 load_dotenv()
 
@@ -216,6 +217,14 @@ if run_clicked:
                     "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
                     "result": result,
                 })
+            except YouTubeDownloadBlockedError as e:
+                status.update(label="Failed ❌", state="error", expanded=True)
+                st.error(
+                    "🚫 YouTube blocked this download. This is common on cloud-hosted "
+                    "apps — YouTube restricts datacenter IPs.\n\n"
+                    "**Try instead:** switch to **Local file upload** in the sidebar "
+                    "and upload the video/audio file directly."
+                )
             except Exception as e:
                 status.update(label="Failed ❌", state="error", expanded=True)
                 st.error(f"Pipeline error: {e}")
