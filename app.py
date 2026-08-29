@@ -27,6 +27,12 @@ from core.rag_engine import ask_question
 
 load_dotenv()
 
+# Action Items / Decisions / Questions tend to come back empty on short test
+# clips (not enough content for the LLM to extract anything meaningful),
+# which looks broken in a demo. Hide those sections for now; flip this back
+# to True once you're testing with longer, real meeting recordings.
+SHOW_EXTRACTION_SECTIONS = False
+
 # =============================================================================
 # PAGE CONFIG
 # =============================================================================
@@ -128,7 +134,7 @@ for key, val in {
 st.markdown("""
 <div class="hero">
     <h1>🎬 AI Video Assistant</h1>
-    <p>Upload a recording — get a transcript, summary, action items, decisions, and a chat that knows the whole meeting.</p>
+    <p>Upload a recording — get a transcript, summary, and a chat that knows the whole meeting.</p>
     <span class="meta-pill">🎙️ Whisper transcription</span>
     <span class="meta-pill">🧠 Mistral summarization</span>
     <span class="meta-pill">💬 RAG-powered chat</span>
@@ -256,13 +262,21 @@ else:
             return len([l for l in text.split("\n") if l.strip()])
         return 0
 
-    c1, c2, c3, c4 = st.columns(4)
-    for col, num, label in [
-        (c1, len(transcript.split()) if transcript else 0, "Words transcribed"),
-        (c2, _count(action_items), "Action items"),
-        (c3, _count(decisions), "Key decisions"),
-        (c4, _count(questions), "Open questions"),
-    ]:
+    if SHOW_EXTRACTION_SECTIONS:
+        stat_cols = st.columns(4)
+        stats = [
+            (len(transcript.split()) if transcript else 0, "Words transcribed"),
+            (_count(action_items), "Action items"),
+            (_count(decisions), "Key decisions"),
+            (_count(questions), "Open questions"),
+        ]
+    else:
+        stat_cols = st.columns(1)
+        stats = [
+            (len(transcript.split()) if transcript else 0, "Words transcribed"),
+        ]
+
+    for col, (num, label) in zip(stat_cols, stats):
         with col:
             st.markdown(f"""
             <div class="stat-card">
@@ -273,9 +287,13 @@ else:
 
     st.write("")
 
-    tab_summary, tab_actions, tab_decisions, tab_questions, tab_transcript, tab_chat = st.tabs(
-        ["📋 Summary", "✅ Action Items", "🔑 Decisions", "❓ Questions", "📝 Transcript", "💬 Chat"]
-    )
+    if SHOW_EXTRACTION_SECTIONS:
+        tab_labels = ["📋 Summary", "✅ Action Items", "🔑 Decisions", "❓ Questions", "📝 Transcript", "💬 Chat"]
+        tabs = st.tabs(tab_labels)
+        tab_summary, tab_actions, tab_decisions, tab_questions, tab_transcript, tab_chat = tabs
+    else:
+        tab_labels = ["📋 Summary", "📝 Transcript", "💬 Chat"]
+        tab_summary, tab_transcript, tab_chat = st.tabs(tab_labels)
 
     def render_block(content, empty_msg="Nothing found."):
         st.markdown('<div class="section-card">', unsafe_allow_html=True)
@@ -296,14 +314,15 @@ else:
             mime="text/markdown",
         )
 
-    with tab_actions:
-        render_block(action_items, "No action items found.")
+    if SHOW_EXTRACTION_SECTIONS:
+        with tab_actions:
+            render_block(action_items, "No action items found.")
 
-    with tab_decisions:
-        render_block(decisions, "No key decisions found.")
+        with tab_decisions:
+            render_block(decisions, "No key decisions found.")
 
-    with tab_questions:
-        render_block(questions, "No open questions found.")
+        with tab_questions:
+            render_block(questions, "No open questions found.")
 
     with tab_transcript:
         st.text_area("Full transcript", transcript, height=420, label_visibility="collapsed")
